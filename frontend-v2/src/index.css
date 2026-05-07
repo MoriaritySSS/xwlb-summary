@@ -1,0 +1,75 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Serif+SC:wght@600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Inter", "Noto Sans SC", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif SC", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  @apply bg-[#F4F4F5] dark:bg-[#0D0D0E] transition-colors duration-300;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Markdown styling for high quality typography */
+.markdown-body {
+  @apply text-neutral-800 dark:text-neutral-300 text-[16px] sm:text-[17px] transition-colors duration-300;
+  line-height: 1.85;
+}
+
+/* Headings with Noto Serif SC for an editorial look */
+.markdown-body h2 {
+  @apply font-serif text-[1.25rem] sm:text-[1.35rem] font-bold mt-10 mb-5 text-neutral-900 dark:text-neutral-100 border-b border-neutral-200 dark:border-neutral-800/80 pb-3 relative pl-4 transition-colors;
+}
+.markdown-body h2::before {
+  content: "";
+  @apply absolute left-0 top-1.5 bottom-4 w-1 bg-red-700 dark:bg-red-600 rounded-sm;
+}
+.markdown-body h3 {
+  @apply font-serif text-[1.1rem] sm:text-[1.2rem] font-bold mt-8 mb-4 text-neutral-800 dark:text-neutral-200 transition-colors;
+}
+
+/* Content blocks */
+.markdown-body p {
+  @apply mb-5 text-neutral-700 dark:text-neutral-300 text-justify;
+}
+.markdown-body ul, .markdown-body ol {
+  @apply pl-6 mb-5 text-neutral-700 dark:text-neutral-300 space-y-2;
+}
+.markdown-body ul {
+  @apply list-none relative;
+}
+.markdown-body ul li {
+  @apply relative;
+}
+.markdown-body ul li::before {
+  content: "•";
+  @apply absolute -left-5 text-red-700 dark:text-red-500 font-bold;
+}
+.markdown-body ol {
+  @apply list-decimal;
+}
+
+/* Emphasis and Highlights */
+.markdown-body strong {
+  @apply font-bold text-neutral-900 dark:text-neutral-100 bg-red-50 dark:bg-red-950/40 px-1 rounded-sm transition-colors;
+}
+.markdown-body blockquote {
+  @apply pl-5 border-l-4 border-red-200 dark:border-red-900/60 bg-neutral-50 dark:bg-neutral-900/30 py-3 pr-4 my-6 text-neutral-600 dark:text-neutral-400 rounded-r-lg shadow-sm transition-colors;
+}
+
+/* Tables if any */
+.markdown-body table {
+  @apply w-full mb-6 border-collapse text-sm sm:text-base;
+}
+.markdown-body th {
+  @apply bg-neutral-100 dark:bg-neutral-800/50 font-semibold p-3 text-left border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-neutral-200 transition-colors;
+}
+.markdown-body td {
+  @apply p-3 border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 transition-colors;
+}
+

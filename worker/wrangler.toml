@@ -1,0 +1,29 @@
+name = "xwlb-summary"
+main = "src/index.ts"
+compatibility_date = "2025-05-06"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "xwlb-db"
+database_id = "4bebb099-87d8-43be-baf0-fce348353802"
+
+# Cron trigger: daily at 19:30 Beijing time (11:30 UTC)
+[triggers]
+crons = ["30 11 * * *"]
+
+# Environment variables (non-secret)
+[vars]
+ACTIVE_MODEL = "deepseek"
+DISABLE_PUSH = "false"
+ENVIRONMENT = "production"
+
+# Note: Secrets must be set via CLI:
+#   npx wrangler secret put DEEPSEEK_API_KEY
+#   npx wrangler secret put SERVERCHAN_SEND_KEY
+#   npx wrangler secret put CUSTOM_MODEL_API_KEY    (optional)
+#   npx wrangler secret put CUSTOM_MODEL_BASE_URL   (optional)
+
+# Static assets (frontend HTML)
+[assets]
+directory = "./public"

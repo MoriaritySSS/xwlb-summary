@@ -1,0 +1,17 @@
+{
+  "name": "xwlb-summary",
+  "version": "1.0.0",
+  "description": "新闻联播自动摘要 - 考公助手",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:create": "wrangler d1 create xwlb-db",
+    "db:migrate": "wrangler d1 execute xwlb-db --file=./schema.sql"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250504.0",
+    "typescript": "^5.8.0",
+    "wrangler": "^4.88.0"
+  }
+}
