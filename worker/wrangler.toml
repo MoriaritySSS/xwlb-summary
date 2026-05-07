@@ -8,9 +8,9 @@ binding = "DB"
 database_name = "xwlb-db"
 database_id = "4bebb099-87d8-43be-baf0-fce348353802"
 
-# Cron trigger: daily at 19:30 Beijing time (11:30 UTC)
+# Cron trigger: daily at 20:00 Beijing time (12:00 UTC)
 [triggers]
-crons = ["30 11 * * *"]
+crons = ["0 12 * * *"]
 
 # Environment variables (non-secret)
 [vars]

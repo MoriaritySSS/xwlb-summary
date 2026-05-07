@@ -80,6 +80,71 @@ export default {
       return jsonResponse(result);
     }
 
+    // Debug: test CCTV fetch
+    if (url.pathname === "/api/debug") {
+      const date = url.searchParams.get("date") || "20260507";
+      const step = url.searchParams.get("step") || "list";
+
+      if (step === "episode") {
+        // Fetch the full episode page
+        const episodeUrl = url.searchParams.get("url");
+        if (!episodeUrl) return jsonResponse({ error: "Missing url param" }, 400);
+        const resp = await fetch(episodeUrl, {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            Accept: "text/html,application/xhtml+xml",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            Referer: "https://tv.cctv.com/lm/xwlb/",
+          },
+        });
+        const body = await resp.text();
+        const linkRegex = /href\s*=\s*["']([^"']*VIDE[^"']*\.shtml)["']/gi;
+        const links: string[] = [];
+        let m: RegExpExecArray | null;
+        while ((m = linkRegex.exec(body)) !== null) {
+          links.push(m[1]);
+        }
+        const titleMatch = body.match(/<title>([^<]+)<\/title>/i);
+        const contentMatch = body.match(/<div[^>]*id\s*=\s*["']content_area["'][^>]*>([\s\S]*?)<\/div>/i);
+        return jsonResponse({
+          status: resp.status,
+          bodyLength: body.length,
+          title: titleMatch ? titleMatch[1] : "",
+          linkCount: links.length,
+          links,
+          hasContentArea: !!contentMatch,
+          contentPreview: contentMatch ? stripHtmlDebug(contentMatch[1]).slice(0, 1000) : "",
+          bodyPreview: body.slice(0, 3000),
+        });
+      }
+
+      // Default: fetch daily list page
+      const testUrl = `https://tv.cctv.com/lm/xwlb/day/${date}.shtml`;
+      const resp = await fetch(testUrl, {
+        headers: {
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+          Accept: "text/html,application/xhtml+xml",
+          "Accept-Language": "zh-CN,zh;q=0.9",
+          Referer: "https://tv.cctv.com/lm/xwlb/",
+        },
+      });
+      const body = await resp.text();
+      const linkRegex = /href\s*=\s*["']([^"']*VIDE[^"']*\.shtml)["']/gi;
+      const links: string[] = [];
+      let m: RegExpExecArray | null;
+      while ((m = linkRegex.exec(body)) !== null) {
+        links.push(m[1]);
+      }
+      return jsonResponse({
+        status: resp.status,
+        bodyLength: body.length,
+        linkCount: links.length,
+        links,
+        bodyPreview: body.slice(0, 2000),
+      });
+    }
+
+
     // Health check
     if (url.pathname === "/api/health") {
       return jsonResponse({ status: "ok", time: new Date().toISOString() });
@@ -91,7 +156,7 @@ export default {
 
 async function runDailyPipeline(env: Env, dateOverride?: string): Promise<{ ok: boolean; error?: string; summary?: string }> {
   try {
-    // 1. Fetch today's transcript
+    // 1. Fetch today's transcript (CCTV publishes by 20:00)
     const result = await fetchDailyTranscript(dateOverride);
     if (!result.success) {
       return { ok: false, error: result.error || "Failed to fetch transcript" };
@@ -148,6 +213,10 @@ function getModel(env: Env): ModelAdapter {
     throw new Error("DEEPSEEK_API_KEY is required. Set it via `npx wrangler secret put DEEPSEEK_API_KEY`");
   }
   return createDeepSeekModel(env.DEEPSEEK_API_KEY);
+}
+
+function stripHtmlDebug(s: string): string {
+  return s.replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
 }
 
 function jsonResponse(data: unknown, status = 200): Response {
