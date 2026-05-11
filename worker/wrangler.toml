@@ -8,9 +8,10 @@ binding = "DB"
 database_name = "xwlb-db"
 database_id = "4bebb099-87d8-43be-baf0-fce348353802"
 
-# Cron trigger: daily at 20:00 Beijing time (12:00 UTC)
+# Cron trigger: daily at 20:00 and 21:00 Beijing time (12:00 + 13:00 UTC)
+# Second cron acts as automatic retry if first fails
 [triggers]
-crons = ["0 12 * * *"]
+crons = ["0 12 * * *", "0 13 * * *"]
 
 # Environment variables (non-secret)
 [vars]

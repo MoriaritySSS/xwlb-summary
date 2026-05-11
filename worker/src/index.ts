@@ -164,15 +164,22 @@ async function runDailyPipeline(env: Env, dateOverride?: string): Promise<{ ok: 
 
     console.log(`Fetched ${result.titles.length} articles, ${result.content.length} chars`);
 
-    // 2. Get the active AI model
+    // 2. Skip if already summarized (retry guard — don't waste API calls)
+    const storage = new Storage(env.DB);
+    const existing = await storage.getByDate(result.date);
+    if (existing && existing.summary) {
+      console.log(`Skipping ${result.date}: already summarized`);
+      return { ok: true, summary: existing.summary.slice(0, 200) };
+    }
+
+    // 3. Get the active AI model
     const model = getModel(env);
 
-    // 3. Summarize
+    // 4. Summarize
     const summaryResult = await summarizeNews(result.content, result.date, model);
     console.log(`Summarized with ${summaryResult.model}`);
 
-    // 4. Store to database
-    const storage = new Storage(env.DB);
+    // 5. Store to database
     await storage.saveDailyNews({
       date: result.date,
       raw_content: result.content,
